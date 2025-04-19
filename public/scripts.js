@@ -58,9 +58,6 @@ const run = async () => {
 
         faceapi.matchDimensions(canvas, displaySize);
 
-        // Get the 2D context with willReadFrequently attribute
-        const ctx = canvas.getContext('2d', { willReadFrequently: true });
-
         setInterval(async () => {
             const faceAIData = await faceapi
                 .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
@@ -76,10 +73,10 @@ const run = async () => {
             const resizedData = faceapi.resizeResults(faceAIData, displaySize);
 
             // Clear the canvas before drawing
-            ctx.clearRect(0, 0, canvas.width, canvas.height); // Use the context with the attribute
+            canvas.getContext('2d', { willReadFrequently: true }).clearRect(0, 0, canvas.width, canvas.height);
 
             // Draw bounding boxes and landmarks
-            faceapi.draw.drawDetections(ctx, resizedData);
+            faceapi.draw.drawDetections(canvas, resizedData);
 
             // Match detected faces with labeled face descriptors
             resizedData.forEach(face => {
@@ -90,7 +87,7 @@ const run = async () => {
                         [bestMatch.label], // Use the image filename as label
                         face.detection.box.topRight
                     );
-                    textField.draw(ctx);
+                    textField.draw(canvas);
                 }
             });
         }, 100); // Update every 100ms
