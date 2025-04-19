@@ -6,31 +6,26 @@ const cors = require('cors');
 const { spawn } = require('child_process'); // Import child_process
 
 const app = express();
-const PORT = 5500;
+const PORT = process.env.PORT || 3000;
 
-// Use CORS middleware
-app.use(cors()); // Enable CORS for all routes
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Set up multer for file uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname));
+    },
+});
+const upload = multer({ storage: storage });
 
 // Serve static files from the public directory
 app.use(express.static('public'));
-
-// Ensure the images directory exists
-const imagesDir = path.join(__dirname, 'public', 'images');
-if (!fs.existsSync(imagesDir)) {
-    fs.mkdirSync(imagesDir, { recursive: true });
-}
-
-// Setup multer for file storage
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, imagesDir); // Use images directory
-    },
-    filename: (req, file, cb) => {
-        cb(null, file.originalname); // Use the original file name
-    }
-});
-
-const upload = multer({ storage: storage });
 
 // Endpoint to handle image uploads
 app.post('/upload', upload.single('file'), (req, res) => {
@@ -82,5 +77,5 @@ function restartServer() {
 
 // Start the server
 app.listen(PORT, () => {
-    console.log(`Server is running at http://localhost:${PORT}`);
+    console.log(`Server is running at https://face-recognition-z2nv.onrender.com:${PORT}`);
 });
