@@ -15,7 +15,11 @@
         }
     </style>
 </head>
-<body class="bg-light">
+<body class="bg-dark text-white">
+    <header class="bg-primary text-white text-center py-3">
+        <h1>Real-Time Face Detection</h1>
+        <p>Upload an image and watch the magic happen!</p>
+    </header>
     <div class="container mt-4">
         <div class="row">
             <div class="col-md-6">
@@ -63,8 +67,9 @@
                     icon: 'success',
                     confirmButtonText: 'OK'
                 }).then(() => {
-                // Clear the file input field after submission
-                document.getElementById('fileInput').value = '';
+                    // Clear the file input field after submission
+                    // document.getElementById('fileInput').value = '';
+                    location.reload(); // Reload the page to show the updated image
                 });
             })
             .catch(error => {
@@ -84,5 +89,9 @@
     <script src="./scripts.js"></script>
     <!-- Bootstrap JS (Optional for components that need JS) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <!-- Footer -->
+    <footer>
+        <p>Made with love by <a href="https://github.com/Wilfred1097" target="_blank" rel="noopener noreferrer">Wil Fred</a></p>
+    </footer>
 </body>
 </html>
