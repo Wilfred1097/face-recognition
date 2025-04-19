@@ -34,7 +34,7 @@ const run = async () => {
     }
 
     // Create a FaceMatcher
-    const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6); // Threshold for matching
+    const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 1.0); // Threshold for matching
 
     // Get the video element
     const video = document.getElementById('video');
