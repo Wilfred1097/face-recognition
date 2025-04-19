@@ -8,6 +8,33 @@ const run = async () => {
         faceapi.nets.ageGenderNet.loadFromUri('./models'),
     ]);
 
+    // Prepare to load images and their face descriptors
+    const labeledFaceDescriptors = [];
+
+    // Fetch the list of image filenames from the JSON file
+    const response = await fetch('./imageList.json');
+    const imageFilenames = await response.json();
+
+    // Load each image and get its face descriptor
+    for (const filename of imageFilenames) {
+        const imageBlob = await fetch(`./images/${filename}`).then(res => res.blob());
+        const img = await faceapi.bufferToImage(imageBlob);
+        const detectedFace = await faceapi.detectSingleFace(img)
+            .withFaceLandmarks()
+            .withFaceDescriptor();
+
+        if (detectedFace) {
+            const descriptor = detectedFace.descriptor;
+            const label = filename.split('.')[0]; // Remove the file extension
+            labeledFaceDescriptors.push(new faceapi.LabeledFaceDescriptors(label, [descriptor]));
+        } else {
+            console.warn(`No face detected in the image: ${filename}`);
+        }
+    }
+
+    // Create a FaceMatcher
+    const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6); // Threshold for matching
+
     // Get the video element
     const video = document.getElementById('video');
 
@@ -33,8 +60,7 @@ const run = async () => {
             const faceAIData = await faceapi
                 .detectAllFaces(video)
                 .withFaceLandmarks()
-                .withFaceDescriptors()
-                .withAgeAndGender();
+                .withFaceDescriptors();
 
             // Ensure video dimensions are valid
             if (video.videoWidth === 0 || video.videoHeight === 0) {
@@ -49,18 +75,18 @@ const run = async () => {
 
             // Draw bounding boxes and landmarks
             faceapi.draw.drawDetections(canvas, resizedData);
-            faceapi.draw.drawFaceLandmarks(canvas, resizedData);
 
-            // Draw age and gender
+            // Match detected faces with labeled face descriptors
             resizedData.forEach(face => {
-                const { age, gender, genderProbability } = face;
-                const genderText = `${gender} - ${genderProbability.toFixed(2)}`;
-                const ageText = `${Math.round(age)} years`;
-                const textField = new faceapi.draw.DrawTextField(
-                    [genderText, ageText],
-                    face.detection.box.topRight
-                );
-                textField.draw(canvas);
+                const bestMatch = faceMatcher.findBestMatch(face.descriptor);
+
+                if (bestMatch.label !== 'unknown') {
+                    const textField = new faceapi.draw.DrawTextField(
+                        [bestMatch.label], // Use the image filename as label
+                        face.detection.box.topRight
+                    );
+                    textField.draw(canvas);
+                }
             });
         }, 100); // Update every 100ms
     });
