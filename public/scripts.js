@@ -14,10 +14,11 @@ const run = async () => {
 
     // Fetch the list of image filenames from the JSON file
     const response = await fetch('./imageList.json');
-    const imageFilenames = await response.json();
+    const imageList = await response.json();
 
     // Load each image and get its face descriptor
-    for (const filename of imageFilenames) {
+    for (const item of imageList) {
+        const { filename, label } = item; // Destructure filename and label from the item
         const imageBlob = await fetch(`./images/${filename}`).then(res => res.blob());
         const img = await faceapi.bufferToImage(imageBlob);
         const detectedFace = await faceapi.detectSingleFace(img, new faceapi.TinyFaceDetectorOptions())
@@ -26,8 +27,7 @@ const run = async () => {
 
         if (detectedFace) {
             const descriptor = detectedFace.descriptor;
-            const label = filename.split('.')[0]; // Remove the file extension
-            labeledFaceDescriptors.push(new faceapi.LabeledFaceDescriptors(label, [descriptor]));
+            labeledFaceDescriptors.push(new faceapi.LabeledFaceDescriptors(label, [descriptor])); // Use the label from JSON
         } else {
             console.warn(`No face detected in the image: ${filename}`);
         }
@@ -84,7 +84,7 @@ const run = async () => {
 
                 if (bestMatch.label !== 'unknown') {
                     const textField = new faceapi.draw.DrawTextField(
-                        [bestMatch.label], // Use the image filename as label
+                        [bestMatch.label], // Use the label from JSON
                         face.detection.box.topRight
                     );
                     textField.draw(canvas);
