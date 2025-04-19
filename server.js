@@ -77,5 +77,5 @@ function restartServer() {
 
 // Start the server
 app.listen(PORT, () => {
-    console.log(`Server is running at https://face-recognition-z2nv.onrender.com:${PORT}`);
+    console.log(`Server is running at http://face-recognition-z2nv.onrender.com:${PORT}`);
 });

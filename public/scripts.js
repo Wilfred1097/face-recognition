@@ -2,6 +2,7 @@
 const run = async () => {
     // Load models
     await Promise.all([
+        faceapi.nets.tinyFaceDetector.loadFromUri('./models'),
         faceapi.nets.ssdMobilenetv1.loadFromUri('./models'),
         faceapi.nets.faceLandmark68Net.loadFromUri('./models'),
         faceapi.nets.faceRecognitionNet.loadFromUri('./models'),
@@ -19,7 +20,7 @@ const run = async () => {
     for (const filename of imageFilenames) {
         const imageBlob = await fetch(`./images/${filename}`).then(res => res.blob());
         const img = await faceapi.bufferToImage(imageBlob);
-        const detectedFace = await faceapi.detectSingleFace(img)
+        const detectedFace = await faceapi.detectSingleFace(img, new faceapi.TinyFaceDetectorOptions())
             .withFaceLandmarks()
             .withFaceDescriptor();
 
@@ -59,7 +60,7 @@ const run = async () => {
 
         setInterval(async () => {
             const faceAIData = await faceapi
-                .detectAllFaces(video)
+                .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
                 .withFaceLandmarks()
                 .withFaceDescriptors();
 
