@@ -41,6 +41,7 @@ const run = async () => {
     // Access the webcam
     navigator.mediaDevices.getUserMedia({ video: {} })
         .then(stream => {
+            console.log("Webcam accessed successfully!");
             video.srcObject = stream;
         })
         .catch(err => console.error("Error accessing webcam: ", err));
