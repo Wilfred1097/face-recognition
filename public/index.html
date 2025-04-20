@@ -54,7 +54,7 @@
             event.preventDefault(); // Prevent default form submission
     
             const formData = new FormData(this);
-            fetch('https://face-recognition-z2nv.onrender.com/upload', { // Updated URL
+            fetch('/upload', { // Updated URL
                 method: 'POST',
                 body: formData
             })

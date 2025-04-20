@@ -2,11 +2,21 @@
 const run = async () => {
     // Load models
     await Promise.all([
-        faceapi.nets.tinyFaceDetector.loadFromUri('./models'),
-        faceapi.nets.ssdMobilenetv1.loadFromUri('./models'),
-        faceapi.nets.faceLandmark68Net.loadFromUri('./models'),
-        faceapi.nets.faceRecognitionNet.loadFromUri('./models'),
-        faceapi.nets.ageGenderNet.loadFromUri('./models'),
+        faceapi.nets.tinyFaceDetector.loadFromUri('./models').then(() => {
+            console.log("Tiny Face Detector model loaded.");
+        }),
+        faceapi.nets.ssdMobilenetv1.loadFromUri('./models').then(() => {
+            console.log("SSD Mobilenet v1 model loaded.");
+        }),
+        faceapi.nets.faceLandmark68Net.loadFromUri('./models').then(() => {
+            console.log("Face Landmark 68 model loaded.");
+        }),
+        faceapi.nets.faceRecognitionNet.loadFromUri('./models').then(() => {
+            console.log("Face Recognition model loaded.");
+        }),
+        faceapi.nets.ageGenderNet.loadFromUri('./models').then(() => {
+            console.log("Age and Gender model loaded.");
+        }),
     ]);
 
     // Prepare to load images and their face descriptors
