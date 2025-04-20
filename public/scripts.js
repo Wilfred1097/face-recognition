@@ -1,23 +1,35 @@
 // Real-time facial detection using webcam
 const run = async () => {
-    // Load models
-    await Promise.all([
-        faceapi.nets.tinyFaceDetector.loadFromUri('./models').then(() => {
-            console.log("Tiny Face Detector model loaded.");
-        }),
-        faceapi.nets.ssdMobilenetv1.loadFromUri('./models').then(() => {
-            console.log("SSD Mobilenet v1 model loaded.");
-        }),
-        faceapi.nets.faceLandmark68Net.loadFromUri('./models').then(() => {
-            console.log("Face Landmark 68 model loaded.");
-        }),
-        faceapi.nets.faceRecognitionNet.loadFromUri('./models').then(() => {
-            console.log("Face Recognition model loaded.");
-        }),
-        faceapi.nets.ageGenderNet.loadFromUri('./models').then(() => {
-            console.log("Age and Gender model loaded.");
-        }),
-    ]);
+    // Show loading indicator
+    const loadingIndicator = document.getElementById('loading');
+    loadingIndicator.style.display = 'block';
+
+    // Load essential models
+    try {
+        await faceapi.nets.tinyFaceDetector.loadFromUri('./models');
+        console.log("Tiny Face Detector model loaded.");
+        await faceapi.nets.faceLandmark68Net.loadFromUri('./models');
+        console.log("Face Landmark 68 model loaded.");
+        
+        // Load Face Recognition model after detecting landmarks
+        await faceapi.nets.faceRecognitionNet.loadFromUri('./models');
+        console.log("Face Recognition model loaded.");
+    
+        // Load additional models if necessary
+        await Promise.all([
+            faceapi.nets.ssdMobilenetv1.loadFromUri('./models').then(() => {
+                console.log("SSD Mobilenet v1 model loaded.");
+            }),
+            faceapi.nets.ageGenderNet.loadFromUri('./models').then(() => {
+                console.log("Age and Gender model loaded.");
+            })
+        ]);
+        
+    } catch (error) {
+        console.error("Error loading models: ", error);
+        loadingIndicator.style.display = 'none';  // Hide loading indicator
+        return;
+    }
 
     // Prepare to load images and their face descriptors
     const labeledFaceDescriptors = [];
@@ -28,23 +40,30 @@ const run = async () => {
 
     // Load each image and get its face descriptor
     for (const item of imageList) {
-        const { filename, label } = item; // Destructure filename and label from the item
-        const imageBlob = await fetch(`./images/${filename}`).then(res => res.blob());
-        const img = await faceapi.bufferToImage(imageBlob);
-        const detectedFace = await faceapi.detectSingleFace(img, new faceapi.TinyFaceDetectorOptions())
-            .withFaceLandmarks()
-            .withFaceDescriptor();
+        const { filename, label } = item;
+        try {
+            const imageBlob = await fetch(`./images/${filename}`).then(res => res.blob());
+            const img = await faceapi.bufferToImage(imageBlob);
+            const detectedFace = await faceapi.detectSingleFace(img, new faceapi.TinyFaceDetectorOptions())
+                .withFaceLandmarks()
+                .withFaceDescriptor();
 
-        if (detectedFace) {
-            const descriptor = detectedFace.descriptor;
-            labeledFaceDescriptors.push(new faceapi.LabeledFaceDescriptors(label, [descriptor])); // Use the label from JSON
-        } else {
-            console.warn(`No face detected in the image: ${filename}`);
+            if (detectedFace) {
+                const descriptor = detectedFace.descriptor;
+                labeledFaceDescriptors.push(new faceapi.LabeledFaceDescriptors(label, [descriptor]));
+            } else {
+                console.warn(`No face detected in the image: ${filename}`);
+            }
+        } catch (error) {
+            console.error(`Error processing image ${filename}: `, error);
         }
     }
 
-    // Create a FaceMatcher
-    const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 1.0); // Threshold for matching
+    // Create a FaceMatcher after loading all descriptors
+    const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 1.0);
+
+    // Hide loading indicator
+    loadingIndicator.style.display = 'none';
 
     // Get the video element
     const video = document.getElementById('video');
@@ -81,8 +100,6 @@ const run = async () => {
             }
 
             const resizedData = faceapi.resizeResults(faceAIData, displaySize);
-
-            // Clear the canvas before drawing
             canvas.getContext('2d', { willReadFrequently: true }).clearRect(0, 0, canvas.width, canvas.height);
 
             // Draw bounding boxes and landmarks
@@ -94,7 +111,7 @@ const run = async () => {
 
                 if (bestMatch.label !== 'unknown') {
                     const textField = new faceapi.draw.DrawTextField(
-                        [bestMatch.label], // Use the label from JSON
+                        [bestMatch.label],
                         face.detection.box.topRight
                     );
                     textField.draw(canvas);
@@ -104,4 +121,5 @@ const run = async () => {
     });
 };
 
+// Call the run function
 run();

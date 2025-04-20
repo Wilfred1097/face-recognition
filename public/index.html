@@ -42,7 +42,8 @@
 
             <div class="col-md-7">
                 <div id="videoContainer" class="position-relative overflow-hidden" style="height: 500px;">
-                    <video id="video" class="rounded position-absolute top-0 start-0 w-100" autoplay muted></video>
+                    <div id="loading" style="display:none;">Loading...</div>
+                    <video id="video" class="rounded position-absolute top-0 start-0 w-100" playsinline autoplay muted></video>
                     <canvas id="canvas" class="rounded position-absolute top-0 start-0 w-100"></canvas>
                 </div>
             </div>
