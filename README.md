@@ -28,4 +28,4 @@ How Face Detection and Comparison Work
 
 This setup allows for seamless real-time face detection and identification by leveraging modern machine learning techniques in JavaScript.
 
-see # [face-api.js]([(https://github.com/justadudewhohacks/face-api.js)]/) documentation 
+# [face-api-documentation(https://github.com/justadudewhohacks/face-api.js/)
