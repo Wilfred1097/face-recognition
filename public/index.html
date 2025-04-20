@@ -9,14 +9,14 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 </head>
-<body class="bg-dark text-white">
+<body class="bg-white text-dark">
     <header class="bg-primary text-white text-center py-3">
         <h1>Real-Time Face Detection</h1>
         <p>Upload an image and watch the magic happen!</p>
     </header>
     <div class="container mt-4">
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-5">
                 <form id="uploadForm" method="POST" class="bg-white p-3 border rounded shadow-sm">
                     <div class="mb-3">
                         <label for="fileInput" class="form-label text-dark">
@@ -30,17 +30,17 @@
 
                 <!-- Added Images Section -->
                 <div class="mt-4">
-                    <h5 class="text-white">Added Images</h5>
+                    <h5 class="text-dark">Added Images</h5>
                     <!-- Search Bar -->
                     <input type="text" id="searchBar" class="form-control mb-3" placeholder="Search images..." />
 
-                    <div id="imageList" class="bg-white text-dark p-3 border rounded shadow-sm" style="max-height: 230px; overflow-y: auto;">
+                    <div id="imageList" class="bg-white text-dark p-3 border rounded shadow-sm" style="max-height: 240px; overflow-y: auto;">
                         <!-- Labels will be dynamically added here -->
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-8">
+            <div class="col-md-7">
                 <div id="videoContainer" class="position-relative overflow-hidden" style="height: 500px;">
                     <video id="video" class="rounded position-absolute top-0 start-0 w-100" autoplay muted></video>
                     <canvas id="canvas" class="rounded position-absolute top-0 start-0 w-100"></canvas>
