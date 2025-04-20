@@ -27,6 +27,17 @@
                     </div>
                     <button type="submit" class="btn btn-primary">Add Image</button>
                 </form>
+
+                <!-- Added Images Section -->
+                <div class="mt-4">
+                    <h5 class="text-white">Added Images</h5>
+                    <!-- Search Bar -->
+                    <input type="text" id="searchBar" class="form-control mb-3" placeholder="Search images..." />
+
+                    <div id="imageList" class="bg-white text-dark p-3 border rounded shadow-sm" style="max-height: 230px; overflow-y: auto;">
+                        <!-- Labels will be dynamically added here -->
+                    </div>
+                </div>
             </div>
 
             <div class="col-md-8">
@@ -77,6 +88,43 @@
                 });
             });
         });
+
+        // Fetch and display the labels from imageList.json
+        fetch('./imageList.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch image list');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const imageListContainer = document.getElementById('imageList');
+                const searchBar = document.getElementById('searchBar');
+
+                // Function to render the list
+                const renderList = (filter = '') => {
+                    imageListContainer.innerHTML = ''; // Clear the container
+                    data
+                        .filter(item => item.label.toLowerCase().includes(filter.toLowerCase())) // Filter based on search
+                        .forEach(item => {
+                            const listItem = document.createElement('div');
+                            listItem.textContent = item.label;
+                            listItem.className = 'mb-2'; // Add some spacing between items
+                            imageListContainer.appendChild(listItem);
+                        });
+                };
+
+                // Initial render
+                renderList();
+
+                // Add event listener to the search bar
+                searchBar.addEventListener('input', (event) => {
+                    renderList(event.target.value); // Re-render the list based on the search input
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching image list:', error);
+            });
     </script>
 
     <script src="./face-api.min.js"></script>
