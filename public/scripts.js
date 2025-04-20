@@ -1,3 +1,14 @@
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./service-worker.js')
+        .then(() => {
+            console.log('Service Worker registered successfully.');
+        })
+        .catch(err => {
+            console.error('Service Worker registration failed: ', err);
+        });
+}
+
 // Real-time facial detection using webcam
 const run = async () => {
     // Show loading indicator
@@ -10,11 +21,11 @@ const run = async () => {
         console.log("Tiny Face Detector model loaded.");
         await faceapi.nets.faceLandmark68Net.loadFromUri('./models');
         console.log("Face Landmark 68 model loaded.");
-        
+
         // Load Face Recognition model after detecting landmarks
         await faceapi.nets.faceRecognitionNet.loadFromUri('./models');
         console.log("Face Recognition model loaded.");
-    
+
         // Load additional models if necessary
         await Promise.all([
             faceapi.nets.ssdMobilenetv1.loadFromUri('./models').then(() => {
@@ -24,10 +35,10 @@ const run = async () => {
                 console.log("Age and Gender model loaded.");
             })
         ]);
-        
+
     } catch (error) {
         console.error("Error loading models: ", error);
-        loadingIndicator.style.display = 'none';  // Hide loading indicator
+        loadingIndicator.style.display = 'none'; // Hide loading indicator
         return;
     }
 
