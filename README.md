@@ -46,10 +46,6 @@ Follow these steps to get the project running:
    npm install
    ```
 
-3. **Replace and remove url**:
-   - replace https://face-recognition-z2nv.onrender.com with http://127.0.0.1/ in server.js
-   - remove https://face-recognition-z2nv.onrender.com in ine number 57. it should look like /upload
-
 3. **Start the server**:
    Launch the server with:
    ```bash
